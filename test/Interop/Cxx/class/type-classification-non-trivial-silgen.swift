@@ -1,4 +1,4 @@
-// RUN: %target-swiftxx-frontend -I %S/Inputs -emit-silgen %s | %FileCheck %s
+// RUN: %target-swiftxx-frontend -I %S/Inputs -emit-silgen %s | %FileCheck --dump-input-filter=all %s
 
 import TypeClassification
 
