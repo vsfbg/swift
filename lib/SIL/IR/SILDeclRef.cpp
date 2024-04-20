@@ -131,13 +131,14 @@ SILDeclRef::SILDeclRef(ValueDecl *vd, SILDeclRef::Kind kind, bool isForeign,
       isKnownToBeLocal(isKnownToBeLocal),
       isRuntimeAccessible(isRuntimeAccessible),
       backDeploymentKind(backDeploymentKind), defaultArgIndex(0),
-      isAsyncLetClosure(0), pointer(derivativeId) {}
+      isAsyncLetClosure(0), CFunctionPointer(0), pointer(derivativeId) {}
 
 SILDeclRef::SILDeclRef(SILDeclRef::Loc baseLoc, bool asForeign,
-                       bool asDistributed, bool asDistributedKnownToBeLocal)
+                       bool asDistributed, bool asDistributedKnownToBeLocal,
+                       bool asCFunctionPointer)
     : isRuntimeAccessible(false),
       backDeploymentKind(SILDeclRef::BackDeploymentKind::None),
-      defaultArgIndex(0), isAsyncLetClosure(0),
+      defaultArgIndex(0), isAsyncLetClosure(0), CFunctionPointer(0),
       pointer((AutoDiffDerivativeFunctionIdentifier *)nullptr) {
   if (auto *vd = baseLoc.dyn_cast<ValueDecl*>()) {
     if (auto *fd = dyn_cast<FuncDecl>(vd)) {
@@ -181,6 +182,7 @@ SILDeclRef::SILDeclRef(SILDeclRef::Loc baseLoc, bool asForeign,
     llvm_unreachable("impossible SILDeclRef loc");
   }
 
+  CFunctionPointer = asCFunctionPointer;
   isForeign = asForeign;
   isDistributed = asDistributed;
   isKnownToBeLocal = asDistributedKnownToBeLocal;

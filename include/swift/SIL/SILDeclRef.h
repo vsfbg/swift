@@ -200,6 +200,8 @@ struct SILDeclRef {
   /// Set if this is for an async let closure.
   unsigned isAsyncLetClosure : 1;
 
+  unsigned CFunctionPointer : 1;
+
   PointerUnion<AutoDiffDerivativeFunctionIdentifier *,
                const GenericSignatureImpl *, CustomAttr *>
       pointer;
@@ -234,7 +236,7 @@ struct SILDeclRef {
       : loc(), kind(Kind::Func), isForeign(0), isDistributed(0),
         isKnownToBeLocal(0), isRuntimeAccessible(0),
         backDeploymentKind(BackDeploymentKind::None), defaultArgIndex(0),
-        isAsyncLetClosure(0) {}
+        isAsyncLetClosure(0), CFunctionPointer(0) {}
 
   /// Produces a SILDeclRef of the given kind for the given decl.
   explicit SILDeclRef(
@@ -257,11 +259,10 @@ struct SILDeclRef {
   ///   for the containing ClassDecl.
   /// - If 'loc' is a global VarDecl, this returns its GlobalAccessor
   ///   SILDeclRef.
-  explicit SILDeclRef(
-      Loc loc,
-      bool isForeign = false,
-      bool isDistributed = false,
-      bool isDistributedLocal = false);
+  explicit SILDeclRef(Loc loc, bool isForeign = false,
+                      bool isDistributed = false,
+                      bool isDistributedLocal = false,
+                      bool isCFunctionPointer = false);
 
   /// See above put produces a prespecialization according to the signature.
   explicit SILDeclRef(Loc loc, GenericSignature prespecializationSig);
@@ -289,6 +290,8 @@ struct SILDeclRef {
   bool hasClosureExpr() const;
   bool hasAutoClosureExpr() const;
   bool hasFuncDecl() const;
+
+  bool hasCFunctionPointer() const { return CFunctionPointer; }
 
   ValueDecl *getDecl() const { return loc.dyn_cast<ValueDecl *>(); }
   AbstractClosureExpr *getAbstractClosureExpr() const {

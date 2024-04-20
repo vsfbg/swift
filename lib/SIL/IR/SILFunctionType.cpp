@@ -713,6 +713,7 @@ static CanSILFunctionType getAutoDiffPullbackType(
     case ParameterConvention::Indirect_Inout:
     case ParameterConvention::Indirect_In_Guaranteed:
     case ParameterConvention::Indirect_InoutAliasable:
+    case ParameterConvention::Indirect_In_CXX:
       conv = ResultConvention::Indirect;
       break;
     }
@@ -1050,6 +1051,7 @@ CanSILFunctionType SILFunctionType::getAutoDiffTransposeFunctionType(
     case ParameterConvention::Indirect_Inout:
     case ParameterConvention::Indirect_In_Guaranteed:
     case ParameterConvention::Indirect_InoutAliasable:
+    case ParameterConvention::Indirect_In_CXX:
       newConv = ResultConvention::Indirect;
       break;
     }
@@ -3330,11 +3332,16 @@ static bool isCFTypedef(const TypeLowering &tl, clang::QualType type) {
 /// indirectly, deduce the convention for it.
 ///
 /// Generally, whether the parameter is +1 is handled before this.
-static ParameterConvention getIndirectCParameterConvention(clang::QualType type) {
+static ParameterConvention getIndirectCParameterConvention(clang::QualType type, bool forDecl) {
   // Non-trivial C++ types would be Indirect_Inout (at least in Itanium).
   // A trivial const * parameter in C should be considered @in.
   if (importer::isCxxConstReferenceType(type.getTypePtr()))
     return ParameterConvention::Indirect_In_Guaranteed;
+  if (auto *decl = type->getAsRecordDecl()) {
+    if (!decl->isParamDestroyedInCallee())
+      return forDecl ? ParameterConvention::Indirect_In_CXX : ParameterConvention::Indirect_In_Guaranteed;
+    return ParameterConvention::Indirect_In;
+  }
   return ParameterConvention::Indirect_In;
 }
 
@@ -3344,7 +3351,7 @@ static ParameterConvention getIndirectCParameterConvention(clang::QualType type)
 /// Generally, whether the parameter is +1 is handled before this.
 static ParameterConvention
 getIndirectCParameterConvention(const clang::ParmVarDecl *param) {
-  return getIndirectCParameterConvention(param->getType());
+  return getIndirectCParameterConvention(param->getType(), /*forDecl=*/true);
 }
 
 /// Given nothing but a formal C parameter type that's passed
@@ -3568,6 +3575,10 @@ public:
     return getIndirectCParameterConvention(getParamType(index));
   }
 
+  virtual ParameterConvention getIndirectCParameterConvention(clang::QualType type) const {
+    return ::getIndirectCParameterConvention(type, /*forDecl=*/false);
+  }
+
   ParameterConvention getDirectParameter(unsigned index,
                             const AbstractionPattern &type,
                            const TypeLowering &substTL) const override {
@@ -3633,6 +3644,10 @@ public:
     : CFunctionTypeConventions(ConventionsKind::CFunction,
                                decl->getType()->castAs<clang::FunctionType>()),
       TheDecl(decl) {}
+
+  ParameterConvention getIndirectCParameterConvention(clang::QualType type) const override {
+    return ::getIndirectCParameterConvention(type, /*forDecl=*/true);
+  }
 
   ParameterConvention getDirectParameter(unsigned index,
                             const AbstractionPattern &type,
@@ -4054,6 +4069,12 @@ static CanSILFunctionType getUncachedSILFunctionTypeForConstant(
       }
       extInfoBuilder = extInfoBuilder.withClangFunctionType(clangType);
     }
+  }
+
+  if (constant.isForeign && constant.hasClosureExpr()) {
+    AbstractionPattern pattern = AbstractionPattern(origLoweredInterfaceType);
+    return getSILFunctionTypeForAbstractCFunction(
+        TC, pattern, origLoweredInterfaceType, extInfoBuilder, constant);
   }
 
   if (!constant.isForeign) {
@@ -4606,9 +4627,17 @@ static AbstractFunctionDecl *getBridgedFunction(SILDeclRef declRef) {
 static AbstractionPattern
 getAbstractionPatternForConstant(ASTContext &ctx, SILDeclRef constant,
                                  CanAnyFunctionType fnType,
-                                 unsigned numParameterLists) {
+                                 unsigned numParameterLists,
+                                 TypeConverter &TC) {
   if (!constant.isForeign)
     return AbstractionPattern(fnType);
+
+  if (constant.hasCFunctionPointer() && constant.hasClosureExpr()) {
+    assert(constant.isNativeToForeignThunk() && "expected a native-to-foreign thunk");
+    auto clangType = TC.Context.getClangFunctionType(
+            fnType->getParams(), fnType->getResult(), FunctionTypeRepresentation::CFunctionPointer);
+    return AbstractionPattern(fnType, clangType);
+  }
 
   auto bridgedFn = getBridgedFunction(constant);
   if (!bridgedFn)
@@ -4657,7 +4686,7 @@ TypeConverter::getLoweredFormalTypes(SILDeclRef constant,
   // Form an abstraction pattern for bridging purposes.
   AbstractionPattern bridgingFnPattern =
     getAbstractionPatternForConstant(Context, constant, fnType,
-                                     numParameterLists);
+                                     numParameterLists, *this);
 
   auto extInfo = fnType->getExtInfo();
   SILFunctionTypeRepresentation rep = getDeclRefRepresentation(constant);
