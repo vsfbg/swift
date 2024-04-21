@@ -6,11 +6,10 @@ import Closure
 
 // CHECK: sil [ossa] @$s4main14testNonTrivialyyF : $@convention(thin) () -> () {
 // CHECK: %[[V0:.*]] = alloc_stack $NonTrivial
-// CHECK: %[[V2:.*]] = function_ref @_ZN10NonTrivialC1Ev : $@convention(c) () -> @out NonTrivial
+// CHECK: %[[V2:.*]] = function_ref @??0NonTrivial@@QEAA@XZ : $@convention(c) () -> @out NonTrivial
 // CHECK: %[[V3:.*]] = apply %[[V2]](%[[V0]]) : $@convention(c) () -> @out NonTrivial
-// CHECK: %[[V4:.*]] = function_ref @_Z5cfunc10NonTrivial : $@convention(c) (@in_cxx NonTrivial) -> ()
-// CHECK: %[[V7:.*]] = apply %[[V4]](%[[V0]]) : $@convention(c) (@in_cxx NonTrivial) -> ()
-// CHECK: destroy_addr %[[V0]] : $*NonTrivial
+// CHECK: %[[V4:.*]] = function_ref @?cfunc@@YAXUNonTrivial@@@Z : $@convention(c) (@in NonTrivial) -> ()
+// CHECK: %[[V7:.*]] = apply %[[V4]](%[[V0]]) : $@convention(c) (@in NonTrivial) -> ()
 // CHECK: dealloc_stack %[[V0]] : $*NonTrivial
 
 public func testNonTrivial() {

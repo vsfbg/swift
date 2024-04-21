@@ -529,6 +529,7 @@ extension BridgedArgumentConvention {
       case .Indirect_In_Guaranteed:  return .indirectInGuaranteed
       case .Indirect_Inout:          return .indirectInout
       case .Indirect_InoutAliasable: return .indirectInoutAliasable
+      case .Indirect_In_CXX:         return .indirectInCXX
       case .Indirect_Out:            return .indirectOut
       case .Direct_Owned:            return .directOwned
       case .Direct_Unowned:          return .directUnowned
@@ -550,6 +551,7 @@ extension ArgumentConvention {
       case .indirectInGuaranteed:   return .Indirect_In_Guaranteed
       case .indirectInout:          return .Indirect_Inout
       case .indirectInoutAliasable: return .Indirect_InoutAliasable
+      case .indirectInCXX:          return .Indirect_In_CXX
       case .indirectOut:            return .Indirect_Out
       case .directOwned:            return .Direct_Owned
       case .directUnowned:          return .Direct_Unowned
