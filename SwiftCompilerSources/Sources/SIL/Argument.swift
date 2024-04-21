@@ -347,6 +347,8 @@ public enum ArgumentConvention : CustomStringConvertible {
   /// convention used by mutable captures in @noescape closures.
   case indirectInoutAliasable
 
+  case indirectInCXX
+
   /// This argument represents an indirect return value address. The callee stores
   /// the returned value to this argument. At the time when the function is called,
   /// the memory location referenced by the argument is uninitialized.
