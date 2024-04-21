@@ -21,8 +21,6 @@ void cfunc2(void (*fp)(NonTrivial)) {
 struct ARCWeak {
 #if __OBJC__
   __weak _Nullable id m;
-#else
-  int m;
 #endif
 };
 

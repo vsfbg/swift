@@ -1,5 +1,7 @@
 // RUN: %target-swiftxx-frontend -I %S/Inputs -emit-silgen %s | %FileCheck --dump-input-filter=all %s
 
+// REQUIRES: OS=windows-msvc
+
 import Closure
 
 // CHECK: sil [ossa] @$s4main14testNonTrivialyyF : $@convention(thin) () -> () {
