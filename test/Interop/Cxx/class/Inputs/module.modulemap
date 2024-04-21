@@ -144,6 +144,5 @@ module CopyMoveAssignment {
 
 module Closure {
   header "closure.h"
-  requires objc
   requires cplusplus
 }
