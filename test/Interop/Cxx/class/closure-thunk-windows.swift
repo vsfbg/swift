@@ -10,7 +10,7 @@ import Closure
 // CHECK: %[[V2:.*]] = alloc_stack $@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> ()
 // CHECK: %[[V3:.*]] = project_block_storage %[[V2]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> ()
 // CHECK: store %[[V1]] to [trivial] %[[V3]] : $*@callee_guaranteed (@in_guaranteed NonTrivial) -> ()
-// CHECK: %[[V7:.*]] = function_ref @$sSo10NonTrivialVIegn_ABIeyBn_TR : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> ()
+// CHECK: %[[V7:.*]] = function_ref @$sSo10NonTrivialVIegn_ABIeyBi_TR : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> ()
 // CHECK: %[[V6:.*]] = init_block_storage_header %[[V2]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), invoke %[[V7]] : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> (), type $@convention(block) (@in_guaranteed NonTrivial) -> ()
 // CHECK: %[[V8:.*]] = copy_block %[[V6]] : $@convention(block) (@in_guaranteed NonTrivial) -> ()
 // CHECK: dealloc_stack %[[V2]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> ()
@@ -20,7 +20,7 @@ import Closure
 // CHECK: %[[V12:.*]] = tuple ()
 // CHECK: return %[[V12]] : $()
 
-// CHECK: sil shared [transparent] [serialized] [reabstraction_thunk] [ossa] @$sSo10NonTrivialVIegn_ABIeyBn_TR : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> () {
+// CHECK: sil shared [transparent] [serialized] [reabstraction_thunk] [ossa] @sSo10NonTrivialVIegn_ABIeyBi_TR : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> () {
 // CHECK: bb0(%[[V0:.*]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), %[[V1:.*]] : $*NonTrivial):
 // CHECK: %[[V2:.*]] = project_block_storage %[[V0]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> ()
 // CHECK: %[[V3:.*]] = load [copy] %[[V2]] : $*@callee_guaranteed (@in_guaranteed NonTrivial) -> ()
