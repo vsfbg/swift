@@ -14,7 +14,7 @@ import Closure
 // CHECK: %[[V6:.*]] = init_block_storage_header %[[V2]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), invoke %[[V7]] : $@convention(c) (@inout_aliasable @block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> (), @in NonTrivial) -> (), type $@convention(block) (@in NonTrivial) -> ()
 // CHECK: %[[V8:.*]] = copy_block %[[V6]] : $@convention(block) (@in NonTrivial) -> ()
 // CHECK: dealloc_stack %[[V2]] : $*@block_storage @callee_guaranteed (@in_guaranteed NonTrivial) -> ()
-// CHECK: %[[V11:.*]] = function_ref @_Z5cfuncU13block_pointerFv10NonTrivialE : $@convention(c) (@convention(block) (@in NonTrivial) -> ()) -> ()
+// CHECK: %[[V11:.*]] = function_ref @?cfunc@@YAXP_EAXUNonTrivial@@@Z@Z : $@convention(c) (@convention(block) (@in NonTrivial) -> ()) -> ()
 // CHECK: apply %[[V11]](%[[V8]]) : $@convention(c) (@convention(block) (@in NonTrivial) -> ()) -> ()
 // CHECK: destroy_value %[[V8]] : $@convention(block) (@in NonTrivial) -> ()
 // CHECK: %[[V12:.*]] = tuple ()
@@ -40,7 +40,7 @@ public func testClosureToBlock() {
 // CHECK: sil [ossa] @$s4main20testClosureToFuncPtryyF : $@convention(thin) () -> () {
 // CHECK: %[[V0:.*]] = function_ref @$s4main20testClosureToFuncPtryyFySo10NonTrivialVcfU_To : $@convention(c) (@in NonTrivial) -> ()
 // CHECK: %[[V1:.*]] = enum $Optional<@convention(c) (@in NonTrivial) -> ()>, #Optional.some!enumelt, %[[V0]] : $@convention(c) (@in NonTrivial) -> ()
-// CHECK: %[[V2:.*]] = function_ref @_Z6cfunc2PFv10NonTrivialE : $@convention(c) (Optional<@convention(c) (@in NonTrivial) -> ()>) -> ()
+// CHECK: %[[V2:.*]] = function_ref @?cfunc2@@YAXP6AXUNonTrivial@@@Z@Z : $@convention(c) (Optional<@convention(c) (@in NonTrivial) -> ()>) -> ()
 // CHECK: %[[V3:.*]] = apply %[[V2]](%[[V1]]) : $@convention(c) (Optional<@convention(c) (@in NonTrivial) -> ()>) -> ()
 // CHECK: %[[V4:.*]] = tuple ()
 // CHECK: return %[[V4]] : $()
