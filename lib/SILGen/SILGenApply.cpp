@@ -4355,8 +4355,9 @@ private:
                                              SILParameterInfo param) {
     bool requiresReabstraction = loweredArgType.getASTType()
       != param.getInterfaceType();
-    // If the parameter is consumed, we have to emit at +1.
-    if (param.isConsumed() || param.getConvention() == ParameterConvention::Indirect_In_CXX) {
+    // If the parameter is consumed or @in_cxx, we have to emit at +1.
+    if (param.isConsumed() ||
+        param.getConvention() == ParameterConvention::Indirect_In_CXX) {
       return {SGFContext(), requiresReabstraction};
     }
 

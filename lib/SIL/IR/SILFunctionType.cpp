@@ -4063,12 +4063,6 @@ static CanSILFunctionType getUncachedSILFunctionTypeForConstant(
     }
   }
 
-  if (constant.isForeign && constant.hasClosureExpr()) {
-    AbstractionPattern pattern = AbstractionPattern(origLoweredInterfaceType);
-    return getSILFunctionTypeForAbstractCFunction(
-        TC, pattern, origLoweredInterfaceType, extInfoBuilder, constant);
-  }
-
   if (!constant.isForeign) {
     ProtocolConformanceRef witnessMethodConformance;
 
@@ -4120,6 +4114,13 @@ static CanSILFunctionType getUncachedSILFunctionTypeForConstant(
           TC, clangDecl, origLoweredInterfaceType, origLoweredInterfaceType,
           extInfoBuilder, foreignInfo, constant);
     }
+  }
+
+  // The type of the native-to-foreign thunk for a swift closure.
+  if (constant.isForeign && constant.hasClosureExpr()) {
+    AbstractionPattern pattern = AbstractionPattern(origLoweredInterfaceType);
+    return getSILFunctionTypeForAbstractCFunction(
+        TC, pattern, origLoweredInterfaceType, extInfoBuilder, constant);
   }
 
   // If the decl belongs to an ObjC method family, use that family's
@@ -4624,8 +4625,8 @@ getAbstractionPatternForConstant(ASTContext &ctx, SILDeclRef constant,
   if (!constant.isForeign)
     return AbstractionPattern(fnType);
 
+  // Native-to-foreign thunk for a swift closure.
   if (constant.hasCFunctionPointer() && constant.hasClosureExpr()) {
-    assert(constant.isNativeToForeignThunk() && "expected a native-to-foreign thunk");
     auto clangType = TC.Context.getClangFunctionType(
             fnType->getParams(), fnType->getResult(), FunctionTypeRepresentation::CFunctionPointer);
     return AbstractionPattern(fnType, clangType);

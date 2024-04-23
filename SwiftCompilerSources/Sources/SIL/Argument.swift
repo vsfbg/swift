@@ -347,6 +347,9 @@ public enum ArgumentConvention : CustomStringConvertible {
   /// convention used by mutable captures in @noescape closures.
   case indirectInoutAliasable
 
+  /// This argument is passed indirectly, i.e. by directly passing the address
+  /// of an object in memory. The callee may modify, but does not destroy the
+  /// object.
   case indirectInCXX
 
   /// This argument represents an indirect return value address. The callee stores

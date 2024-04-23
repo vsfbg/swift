@@ -16,3 +16,18 @@ import Closure
 public func testNonTrivial() {
   cfunc(NonTrivial());
 }
+
+// CHECK: sil [ossa] @$s4main29testNonTrivialFunctionPointeryyF : $@convention(thin) () -> () {
+// CHECK: %[[V0:.*]] = function_ref @_Z8getFnPtrv : $@convention(c) () -> @convention(c) (@in_cxx NonTrivial) -> ()
+// CHECK: %[[V1:.*]] = apply %[[V0]]() : $@convention(c) () -> @convention(c) (@in_cxx NonTrivial) -> ()
+// CHECK: %[[V3:.*]] = alloc_stack $NonTrivial
+// CHECK: %[[V7:.*]] = function_ref @_ZN10NonTrivialC1Ev : $@convention(c) () -> @out NonTrivial
+// CHECK: apply %[[V7]](%[[V3]]) : $@convention(c) () -> @out NonTrivial
+// CHECK: apply %[[V1]](%[[V3]]) : $@convention(c) (@in_cxx NonTrivial) -> ()
+// CHECK: destroy_addr %[[V3]] : $*NonTrivial
+// CHECK: dealloc_stack %[[V3]] : $*NonTrivial
+
+public func testNonTrivialFunctionPointer() {
+  let f = getFnPtr()
+  f(NonTrivial())
+}

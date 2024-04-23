@@ -31,4 +31,10 @@ void cfuncARCWeak(void (^ _Nonnull block)(ARCWeak)) {
 void cfunc(NonTrivial);
 void cfuncARCWeak(ARCWeak);
 
+typedef void (*FnPtr)(NonTrivial);
+FnPtr _Nonnull getFnPtr();
+
+typedef void (*FnPtr2)(ARCWeak);
+FnPtr2 _Nonnull getFnPtr2();
+
 #endif // __CLOSURE__
