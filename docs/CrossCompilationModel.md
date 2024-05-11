@@ -1,5 +1,5 @@
 
-# Crosss-Compilation Model
+# Cross-Compilation Model
 
 ## Components
 
