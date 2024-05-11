@@ -1,0 +1,76 @@
+
+# Crosss-Compilation Model
+
+## Components
+
+When compiling Swift code, the compiler will consult three different sources of
+inputs outside of the user provided code.
+
+1. Compiler Resources
+2. System (C/C++) Headers
+3. Platform Swift Modules (SDK Overlay)
+
+These pieces compose in a particular manner to build a system image to build
+code against.
+
+The compiler resources are content for the compiler that the compiler provides.
+In the case of the Swift compiler, this includes the Swift shims. Whilst this is
+a compiler resource, the packaging may not be necessarily part of the toolchain
+due to interdependencies. Some of this content may be required to process the
+system headers themselves (e.g. clang's builtin resource headers).
+
+The C/C++ system headers (and libraries) are what is traditionally called the
+Unix "sysroot". On Darwin, this is the SDK which are shipped to the user, while
+on Windows, this is called the Windows SDK, which is a separate installable
+component.
+
+The platform Swift modules provided by the SDK overlay overlays the sysroot or
+(C/C++) SDK. This overlay is a set of "extensions" to the system provided
+headers allowing for a better import into Swift. This may be in the form of API
+Notes, module maps, wrapper types, or Swift `extension`s. This code may or may
+not be fully inlined into the client code and thus be part of the platform ABI.
+
+## Flags
+
+The compiler resources are controlled via the frontend flag `-resource-dir`.
+This allows the driver to select the correct location in most cases while
+allowing the developer control to override the value if required. This should
+normally not be required to be altered as it is intrinsic to the compiler.
+
+The system headers are more interesting. Since this is C/C++ content, this is
+actually consumed through the clang importer rather than the Swift compiler. The
+Swift toolchain uses clang as the C/C++ compiler on all platforms as it is
+embedded to generate inline FFI to enable seamless C/C++ bridging to Swift. The
+flag used by clang is derived from the GCC toolchain, and is spelt `--sysroot`.
+Again, it is the responsibility of the Swift driver to identify the correct
+sysroot, although because there is no uniform installation location, this
+parameter needs to be exposed to the user to allow selection, particularly in
+the case of cross-compilation.
+
+Currently, we do not have a good way to isolate the SDK overlay from the
+remainder of the required content. On Darwin platforms, this content is shipped
+as part of the SDK. As a result the singular `-sdk` flag allows control over the
+platform SDK and SDK overlay. Windows uses a split model as the Windows SDK is
+split into multiple components and can be controlled individually (i.e. UCRT
+version, SDK version, VCRuntime version). The `-sdk` flag is used to specify the
+location of the SDK overlay which is applied to the system SDK. By default, the
+environment variable `SDKROOT` is used to seed the value of `-sdk`, though the
+user may specify the value explicitly. Other platforms do not currently have a
+flag to control this location and the toolchain defaults to a set of relative
+paths to locate the content. This prevents cross-compilation as the included
+content would be for a single platform.
+
+## Solution
+
+Generalising the above structure and sharing the common sharing gives way to the
+following set of flags for cross-compilation:
+
+1. `-target`: specifies the triple for the host
+2. `-sysroot`: specifies the (C/C++) sysroot for the host platform content
+3. `-sdk`: specifies the Swift SDK overlay for the host
+
+The values for these may be defaulted by the driver on a per-platform basis.
+This allows the driver to make the most appropriate choice for the host that is
+being compiled for without loss of generality. A platform may opt to ignore one
+or more of these flags (e.g. Windows does not use `-syroot` as the system
+headers are not organised like the traditional unix layout).
