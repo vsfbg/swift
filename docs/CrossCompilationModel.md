@@ -15,12 +15,12 @@ code against.
 
 The compiler resources are content for the compiler that the compiler provides.
 In the case of the Swift compiler, this includes the Swift shims. Whilst this is
-a compiler resource, the packaging may not be necessarily part of the toolchain
-due to interdependencies. Some of this content may be required to process the
+a compiler resource, the packaging may not necessarily be part of the toolchain
+due to interdependencies. Some of this content is required to process the
 system headers themselves (e.g. clang's builtin resource headers).
 
 The C/C++ system headers (and libraries) are what is traditionally called the
-Unix "sysroot". On Darwin, this is the SDK which are shipped to the user, while
+Unix "sysroot". On Darwin, this is the SDK which is shipped to the user, while
 on Windows, this is called the Windows SDK, which is a separate installable
 component.
 
@@ -32,17 +32,17 @@ not be fully inlined into the client code and thus be part of the platform ABI.
 
 ## Flags
 
-The compiler resources are controlled via the frontend flag `-resource-dir`.
+The compiler resources are controlled via the driver flag `-resource-dir`.
 This allows the driver to select the correct location in most cases while
 allowing the developer control to override the value if required. This should
-normally not be required to be altered as it is intrinsic to the compiler.
+Normally, you should not need to set this flag as the location of these files is intrinsic to the compiler.
 
 The system headers are more interesting. Since this is C/C++ content, this is
 actually consumed through the clang importer rather than the Swift compiler. The
 Swift toolchain uses clang as the C/C++ compiler on all platforms as it is
 embedded to generate inline FFI to enable seamless C/C++ bridging to Swift. The
 flag used by clang is derived from the GCC toolchain, and is spelt `--sysroot`.
-Again, it is the responsibility of the Swift driver to identify the correct
+The compiler driver is responsible for identifying the structure of the sysroot. When cross-compiling, there isn't a consistent location for these files, so the driver must expose an argument to specify where to find these files.
 sysroot, although because there is no uniform installation location, this
 parameter needs to be exposed to the user to allow selection, particularly in
 the case of cross-compilation.
