@@ -70,6 +70,14 @@ following set of flags for cross-compilation:
 3. `-sdk`: specifies the Swift SDK overlay for the host
 
 The values for these may be defaulted by the driver on a per-platform basis.
+
+The `-sysroot` flag identifies the location for the C/C++ headers and libraries required for compilation. This is primarily used by non-Darwin, non-Windows hosts as Darwin has its own SDK concept that allows for co-installation and Windows uses a different model which merges multiple locations in memory.
+
+The `-sdk` flag identifies the location of the "Swift SDK overlay", which provides the neecessary content for Swift compilation (including binary swiftmodules). This includes the standard library and the core libraries (dispatch, Foundation, and possibly XCTest - Windows isolates XCTest from the rest of the SDK). The Swift shims are also provided by this location as they are a dependency for properly processing the Swift core library.
+
+## Compatibility
+
+In order to retain compatibility with older toolchain releases which did not include support for the `-sysroot` flag, the driver shall default the value to the value provided to `-sdk`. This allows us to transition between the existing toolchains which expected a single root containing all the necessary components.
 This allows the driver to make the most appropriate choice for the host that is
 being compiled for without loss of generality. A platform may opt to ignore one
 or more of these flags (e.g. Windows does not use `-syroot` as the system
