@@ -80,5 +80,5 @@ The `-sdk` flag identifies the location of the "Swift SDK overlay", which provid
 In order to retain compatibility with older toolchain releases which did not include support for the `-sysroot` flag, the driver shall default the value to the value provided to `-sdk`. This allows us to transition between the existing toolchains which expected a single root containing all the necessary components.
 This allows the driver to make the most appropriate choice for the host that is
 being compiled for without loss of generality. A platform may opt to ignore one
-or more of these flags (e.g. Windows does not use `-syroot` as the system
+or more of these flags (e.g. Windows does not use `-sysroot` as the system
 headers are not organised like the traditional unix layout).
