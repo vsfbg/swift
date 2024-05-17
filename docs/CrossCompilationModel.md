@@ -73,7 +73,7 @@ The values for these may be defaulted by the driver on a per-platform basis.
 
 The `-sysroot` flag identifies the location for the C/C++ headers and libraries required for compilation. This is primarily used by non-Darwin, non-Windows hosts as Darwin has its own SDK concept that allows for co-installation and Windows uses a different model which merges multiple locations in memory.
 
-The `-sdk` flag identifies the location of the "Swift SDK overlay", which provides the neecessary content for Swift compilation (including binary swiftmodules). This includes the standard library and the core libraries (dispatch, Foundation, and possibly XCTest - Windows isolates XCTest from the rest of the SDK). The Swift shims are also provided by this location as they are a dependency for properly processing the Swift core library.
+The `-sdk` flag identifies the location of the "Swift SDK overlay", which provides the necessary content for Swift compilation (including binary swiftmodules). This includes the standard library and the core libraries (dispatch, Foundation, and possibly XCTest - Windows isolates XCTest from the rest of the SDK). The Swift shims are also provided by this location as they are a dependency for properly processing the Swift core library.
 
 ## Compatibility
 
