@@ -34,7 +34,7 @@ not be fully inlined into the client code and thus be part of the platform ABI.
 
 The compiler resources are controlled via the driver flag `-resource-dir`.
 This allows the driver to select the correct location in most cases while
-allowing the developer control to override the value if required. This should
+allowing the developer control to override the value if required.
 Normally, you should not need to set this flag as the location of these files is intrinsic to the compiler.
 
 The system headers are more interesting. Since this is C/C++ content, this is
