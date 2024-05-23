@@ -60,6 +60,9 @@ flag to control this location and the toolchain defaults to a set of relative
 paths to locate the content. This prevents cross-compilation as the included
 content would be for a single platform.
 
+> [!NOTE]
+> `-resource-dir` historically influenced the driver's search for the SDK content, locating the standard library relative to the resource directory. This behaviour is considered deprecated but remains for compatibility. The `-sdk` parameter is given precedence and is the preferred mechanism for controlling the behaviour of the driver to locate the SDK content.
+
 ## Solution
 
 Generalising the above structure and sharing the common sharing gives way to the
